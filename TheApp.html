@@ -6,18 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Omninet Databank: Long Rim</title>
   
-  <!-- React and ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   
-  <!-- Babel for in-browser JSX parsing -->
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- FontAwesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Hides scrollbar for horizontal scrolling menus on mobile */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
 </head>
 <body class="bg-slate-950 text-slate-300 font-mono">
   <div id="root"></div>
@@ -490,39 +497,39 @@
           {/* ========================================= */}
           {/* GLOBAL HEADER & TABS                      */}
           {/* ========================================= */}
-          <div className="w-full max-w-7xl mb-6">
-            <div className="flex flex-col md:flex-row items-center justify-between border-b-2 border-slate-700 pb-4 mb-4">
-              <div className="flex items-center gap-3 mb-4 md:mb-0">
+          <div className="w-full max-w-7xl mb-4 sm:mb-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between border-b-2 border-slate-700 pb-4 mb-4">
+              <div className="flex items-center gap-3 w-full">
                 <i className="fa-solid fa-database text-white text-3xl opacity-50"></i>
                 <div>
-                  <h1 className="text-2xl font-black text-white tracking-widest uppercase">Omninet Databank</h1>
-                  <h2 className="text-xs text-slate-500 tracking-widest">// RIM SECTOR COMPILATION //</h2>
+                  <h1 className="text-xl sm:text-2xl font-black text-white tracking-widest uppercase">Omninet Databank</h1>
+                  <h2 className="text-[10px] sm:text-xs text-slate-500 tracking-widest">// RIM SECTOR COMPILATION //</h2>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0 justify-start md:justify-end">
                 <input type="file" accept=".json" ref={fileInputRef} onChange={handleImport} className="hidden" />
-                <button onClick={() => fileInputRef.current?.click()} className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold uppercase text-xs tracking-wider transition-all flex items-center gap-2 border border-slate-600">
+                <button onClick={() => fileInputRef.current?.click()} className="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold uppercase text-xs tracking-wider transition-all flex items-center gap-2 border border-slate-600">
                   <i className="fa-solid fa-upload text-sm"></i> Import
                 </button>
-                <button onClick={exportDatabank} className="px-3 py-1.5 bg-slate-800 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-slate-700 hover:border-emerald-400 font-bold uppercase text-xs tracking-wider transition-all flex items-center gap-2">
-                  <i className="fa-solid fa-download text-sm"></i> Export All
+                <button onClick={exportDatabank} className="flex-1 sm:flex-none justify-center px-3 py-2 sm:py-1.5 bg-slate-800 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-slate-700 hover:border-emerald-400 font-bold uppercase text-xs tracking-wider transition-all flex items-center gap-2">
+                  <i className="fa-solid fa-download text-sm"></i> Export
                 </button>
               </div>
             </div>
 
-            {/* TAB NAVIGATION */}
-            <div className="flex flex-wrap gap-2 border-b border-slate-800">
-              <button onClick={() => setActiveTab('stations')} className={`px-4 sm:px-6 py-3 font-black tracking-widest uppercase flex items-center gap-2 transition-all ${activeTab === 'stations' ? 'bg-orange-600 text-white border-t-2 border-orange-400' : 'bg-slate-900 text-slate-500 hover:text-orange-400'}`}>
-                <i className="fa-solid fa-map text-lg"></i> <span className="hidden sm:inline">Stations</span>
+            {/* TAB NAVIGATION (Scrollable horizontally on mobile) */}
+            <div className="flex overflow-x-auto hide-scrollbar border-b border-slate-800 w-full snap-x">
+              <button onClick={() => setActiveTab('stations')} className={`px-4 py-3 font-black tracking-widest uppercase flex items-center justify-center gap-2 transition-all shrink-0 snap-start flex-1 sm:flex-none ${activeTab === 'stations' ? 'bg-orange-600 text-white border-t-2 border-orange-400' : 'bg-slate-900 text-slate-500 hover:text-orange-400'}`}>
+                <i className="fa-solid fa-map text-sm sm:text-lg"></i> <span className="text-xs sm:text-sm">Stations</span>
               </button>
-              <button onClick={() => setActiveTab('npcs')} className={`px-4 sm:px-6 py-3 font-black tracking-widest uppercase flex items-center gap-2 transition-all ${activeTab === 'npcs' ? 'bg-cyan-600 text-white border-t-2 border-cyan-400' : 'bg-slate-900 text-slate-500 hover:text-cyan-400'}`}>
-                <i className="fa-solid fa-users text-lg"></i> <span className="hidden sm:inline">Personnel</span>
+              <button onClick={() => setActiveTab('npcs')} className={`px-4 py-3 font-black tracking-widest uppercase flex items-center justify-center gap-2 transition-all shrink-0 snap-start flex-1 sm:flex-none ${activeTab === 'npcs' ? 'bg-cyan-600 text-white border-t-2 border-cyan-400' : 'bg-slate-900 text-slate-500 hover:text-cyan-400'}`}>
+                <i className="fa-solid fa-users text-sm sm:text-lg"></i> <span className="text-xs sm:text-sm">Personnel</span>
               </button>
-              <button onClick={() => setActiveTab('pirates')} className={`px-4 sm:px-6 py-3 font-black tracking-widest uppercase flex items-center gap-2 transition-all ${activeTab === 'pirates' ? 'bg-red-700 text-white border-t-2 border-red-400' : 'bg-slate-900 text-slate-500 hover:text-red-400'}`}>
-                <i className="fa-solid fa-skull text-lg"></i> <span className="hidden sm:inline">Pirates</span>
+              <button onClick={() => setActiveTab('pirates')} className={`px-4 py-3 font-black tracking-widest uppercase flex items-center justify-center gap-2 transition-all shrink-0 snap-start flex-1 sm:flex-none ${activeTab === 'pirates' ? 'bg-red-700 text-white border-t-2 border-red-400' : 'bg-slate-900 text-slate-500 hover:text-red-400'}`}>
+                <i className="fa-solid fa-skull text-sm sm:text-lg"></i> <span className="text-xs sm:text-sm">Pirates</span>
               </button>
-              <button onClick={() => setActiveTab('enterprises')} className={`px-4 sm:px-6 py-3 font-black tracking-widest uppercase flex items-center gap-2 transition-all ${activeTab === 'enterprises' ? 'bg-purple-700 text-white border-t-2 border-purple-400' : 'bg-slate-900 text-slate-500 hover:text-purple-400'}`}>
-                <i className="fa-solid fa-building text-lg"></i> <span className="hidden sm:inline">Enterprises</span>
+              <button onClick={() => setActiveTab('enterprises')} className={`px-4 py-3 font-black tracking-widest uppercase flex items-center justify-center gap-2 transition-all shrink-0 snap-start flex-1 sm:flex-none ${activeTab === 'enterprises' ? 'bg-purple-700 text-white border-t-2 border-purple-400' : 'bg-slate-900 text-slate-500 hover:text-purple-400'}`}>
+                <i className="fa-solid fa-building text-sm sm:text-lg"></i> <span className="text-xs sm:text-sm">Enterprises</span>
               </button>
             </div>
           </div>
@@ -532,17 +539,17 @@
           {/* ========================================= */}
           {activeTab === 'stations' && (
             <div className="w-full max-w-7xl animate-in fade-in duration-300">
-              <div className="flex flex-col sm:flex-row justify-between mb-6 border-b border-orange-600/30 pb-4">
+              <div className="flex flex-col xl:flex-row justify-between mb-6 border-b border-orange-600/30 pb-4">
                 <h2 className="text-xl text-orange-500 font-black uppercase flex items-center gap-2"><i className="fa-solid fa-terminal text-xl"></i> Local Environments</h2>
-                <div className="flex gap-2 mt-3 sm:mt-0">
-                  <button onClick={() => setStationViewMode(stationViewMode === 'query' ? 'archives' : 'query')} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${stationViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
+                <div className="grid grid-cols-2 sm:flex gap-2 mt-4 xl:mt-0 w-full xl:w-auto">
+                  <button onClick={() => setStationViewMode(stationViewMode === 'query' ? 'archives' : 'query')} className={`flex items-center justify-center py-2 px-3 sm:px-4 font-bold text-[10px] sm:text-xs uppercase transition-all border gap-2 ${stationViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
                     <i className="fa-solid fa-box-archive text-sm"></i> Archives ({savedStations.length})
                   </button>
                   {stationViewMode === 'query' && (
                     <>
-                      <button onClick={() => saveEntity('station')} disabled={isCurrentStationSaved} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${isCurrentStationSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentStationSaved ? 'Saved' : 'Save'}</button>
-                      <button onClick={() => setShowStationModal(true)} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase border border-slate-600 flex items-center gap-2"><i className="fa-solid fa-gear text-sm"></i> Config</button>
-                      <button onClick={generateStation} className="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs uppercase border border-orange-400 flex items-center gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Scan</button>
+                      <button onClick={() => saveEntity('station')} disabled={isCurrentStationSaved} className={`flex items-center justify-center py-2 px-3 sm:px-4 font-bold text-[10px] sm:text-xs uppercase transition-all border gap-2 ${isCurrentStationSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentStationSaved ? 'Saved' : 'Save'}</button>
+                      <button onClick={() => setShowStationModal(true)} className="flex items-center justify-center py-2 px-3 sm:px-4 bg-slate-800 hover:bg-slate-700 text-white font-bold text-[10px] sm:text-xs uppercase border border-slate-600 gap-2"><i className="fa-solid fa-gear text-sm"></i> Config</button>
+                      <button onClick={generateStation} className="flex items-center justify-center py-2 px-3 sm:px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold text-[10px] sm:text-xs uppercase border border-orange-400 gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Scan</button>
                     </>
                   )}
                 </div>
@@ -560,8 +567,8 @@
                             <p className="text-xs text-slate-400 line-clamp-2 mb-4">{saved.station.seed}</p>
                           </div>
                           <div className="flex gap-2 border-t border-slate-800 pt-3">
-                            <button onClick={() => loadEntity('station', saved)} className="flex-1 py-1.5 bg-slate-800 hover:bg-orange-600 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
-                            <button onClick={() => deleteEntity('station', saved.meta.registryId)} className="px-3 py-1.5 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
+                            <button onClick={() => loadEntity('station', saved)} className="flex-1 py-2 bg-slate-800 hover:bg-orange-600 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
+                            <button onClick={() => deleteEntity('station', saved.meta.registryId)} className="px-4 py-2 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
                           </div>
                         </div>
                       ))}
@@ -574,10 +581,10 @@
                     <div className="bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-2 opacity-10"><i className="fa-solid fa-database text-[100px]"></i></div>
                       <h3 className="text-xs text-orange-500 font-bold mb-1 tracking-wider uppercase">Designation</h3>
-                      <div className="text-3xl text-white font-black uppercase mb-1">{stationData.name}</div>
-                      <div className="mt-4 space-y-3 relative z-10 text-sm">
+                      <div className="text-2xl sm:text-3xl text-white font-black uppercase mb-1">{stationData.name}</div>
+                      <div className="mt-4 space-y-3 relative z-10 text-xs sm:text-sm">
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Registry ID</span><span className="text-slate-200">{stationMeta.registryId}</span></div>
-                        <div className="flex justify-between border-b border-slate-800 pb-1 items-start"><span className="text-slate-500 mr-4">Local Districts</span><span className="text-slate-200 text-right">{stationData.districts.join(', ') || "None Recorded"}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1 items-start"><span className="text-slate-500 mr-2 sm:mr-4">Local Districts</span><span className="text-slate-200 text-right">{stationData.districts.join(', ') || "None Recorded"}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Threat Index</span><span className={`${stationMeta.threat === 'Critical' ? 'text-red-500 font-bold' : 'text-slate-200'}`}>{stationMeta.threat}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Local Gravity</span><span className="text-slate-200">{stationMeta.gravity}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Pop. Est</span><span className="text-slate-200">{stationMeta.population}</span></div>
@@ -587,26 +594,26 @@
                     <div className="bg-slate-900 border border-slate-800 p-5">
                       <div className="flex items-center gap-2 mb-3"><i className="fa-solid fa-crosshairs text-orange-500 text-lg"></i><h3 className="text-md text-white font-bold tracking-wider uppercase">Operational Purview</h3></div>
                       <div className="space-y-4">
-                        <div><p className="text-xs text-slate-500 uppercase">Primary Industry</p><p className="text-md text-slate-100 border-l-2 border-orange-500 pl-3 mt-1">{stationData.majorPurpose}</p></div>
-                        {stationData.minorPurpose && <div><p className="text-xs text-slate-500 uppercase">Secondary Industry</p><p className="text-sm text-slate-300 border-l-2 border-slate-600 pl-3 mt-1">{stationData.minorPurpose}</p></div>}
+                        <div><p className="text-xs text-slate-500 uppercase">Primary Industry</p><p className="text-sm sm:text-md text-slate-100 border-l-2 border-orange-500 pl-3 mt-1">{stationData.majorPurpose}</p></div>
+                        {stationData.minorPurpose && <div><p className="text-xs text-slate-500 uppercase">Secondary Industry</p><p className="text-xs sm:text-sm text-slate-300 border-l-2 border-slate-600 pl-3 mt-1">{stationData.minorPurpose}</p></div>}
                       </div>
                     </div>
                   </div>
                   <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-slate-900 border border-slate-800 p-6">
-                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-map text-lg text-orange-500"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Historical Seed & Foundation</h3></div>
-                      <p className="text-slate-300 text-md leading-relaxed bg-slate-950 p-4 border border-slate-800 rounded">{stationData.seed}</p>
+                    <div className="bg-slate-900 border border-slate-800 p-4 sm:p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-map text-lg text-orange-500"></i><h3 className="text-base sm:text-lg text-white font-bold tracking-wider uppercase">Historical Seed & Foundation</h3></div>
+                      <p className="text-slate-300 text-sm sm:text-md leading-relaxed bg-slate-950 p-4 border border-slate-800 rounded">{stationData.seed}</p>
                     </div>
                     {stationData.curiosities.length > 0 && (
-                      <div className="bg-slate-900 border border-slate-800 p-6">
-                        <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-eye text-sky-500 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Notable Curiosities</h3></div>
-                        <div className="space-y-3">{stationData.curiosities.map((c, i) => <div key={i} className="flex gap-3 items-start bg-slate-950 p-3 border border-slate-800 rounded"><i className="fa-solid fa-bolt text-sky-400 mt-0.5 shrink-0 text-base"></i><p className="text-slate-300 text-sm">{c}</p></div>)}</div>
+                      <div className="bg-slate-900 border border-slate-800 p-4 sm:p-6">
+                        <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-eye text-sky-500 text-xl"></i><h3 className="text-base sm:text-lg text-white font-bold tracking-wider uppercase">Notable Curiosities</h3></div>
+                        <div className="space-y-3">{stationData.curiosities.map((c, i) => <div key={i} className="flex gap-3 items-start bg-slate-950 p-3 border border-slate-800 rounded"><i className="fa-solid fa-bolt text-sky-400 mt-0.5 shrink-0 text-base"></i><p className="text-slate-300 text-xs sm:text-sm">{c}</p></div>)}</div>
                       </div>
                     )}
                     {stationData.problems.length > 0 && (
-                      <div className="bg-slate-900 border-t-2 border-red-600 p-6 shadow-[0_-2px_10px_rgba(220,38,38,0.1)]">
-                        <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-shield-halved text-red-500 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Active Problems</h3></div>
-                        <div className="space-y-3">{stationData.problems.map((p, i) => <div key={i} className="flex gap-3 items-start bg-red-950/20 p-3 border border-red-900/50 rounded"><i className="fa-solid fa-triangle-exclamation text-red-500 mt-0.5 shrink-0 text-base"></i><p className="text-red-100 text-sm font-semibold">{p}</p></div>)}</div>
+                      <div className="bg-slate-900 border-t-2 border-red-600 p-4 sm:p-6 shadow-[0_-2px_10px_rgba(220,38,38,0.1)]">
+                        <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-shield-halved text-red-500 text-xl"></i><h3 className="text-base sm:text-lg text-white font-bold tracking-wider uppercase">Active Problems</h3></div>
+                        <div className="space-y-3">{stationData.problems.map((p, i) => <div key={i} className="flex gap-3 items-start bg-red-950/20 p-3 border border-red-900/50 rounded"><i className="fa-solid fa-triangle-exclamation text-red-500 mt-0.5 shrink-0 text-base"></i><p className="text-red-100 text-xs sm:text-sm font-semibold">{p}</p></div>)}</div>
                       </div>
                     )}
                   </div>
@@ -620,16 +627,16 @@
           {/* ========================================= */}
           {activeTab === 'npcs' && (
             <div className="w-full max-w-7xl animate-in fade-in duration-300">
-              <div className="flex flex-col sm:flex-row justify-between mb-6 border-b border-cyan-600/30 pb-4">
+              <div className="flex flex-col xl:flex-row justify-between mb-6 border-b border-cyan-600/30 pb-4">
                 <h2 className="text-xl text-cyan-500 font-black uppercase flex items-center gap-2"><i className="fa-solid fa-user text-xl"></i> Subject Profiles</h2>
-                <div className="flex gap-2 mt-3 sm:mt-0">
-                  <button onClick={() => setNpcViewMode(npcViewMode === 'query' ? 'archives' : 'query')} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${npcViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
+                <div className="grid grid-cols-2 sm:flex gap-2 mt-4 xl:mt-0 w-full xl:w-auto">
+                  <button onClick={() => setNpcViewMode(npcViewMode === 'query' ? 'archives' : 'query')} className={`flex items-center justify-center py-2 px-3 sm:px-4 font-bold text-[10px] sm:text-xs uppercase transition-all border gap-2 ${npcViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
                     <i className="fa-solid fa-box-archive text-sm"></i> Archives ({savedNpcs.length})
                   </button>
                   {npcViewMode === 'query' && (
                     <>
-                      <button onClick={() => saveEntity('npc')} disabled={isCurrentNpcSaved} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${isCurrentNpcSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentNpcSaved ? 'Saved' : 'Save'}</button>
-                      <button onClick={generateNpc} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs uppercase border border-cyan-400 flex items-center gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Scan Personnel</button>
+                      <button onClick={() => saveEntity('npc')} disabled={isCurrentNpcSaved} className={`flex items-center justify-center py-2 px-3 sm:px-4 font-bold text-[10px] sm:text-xs uppercase transition-all border gap-2 ${isCurrentNpcSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentNpcSaved ? 'Saved' : 'Save'}</button>
+                      <button onClick={generateNpc} className="col-span-2 sm:col-span-1 flex items-center justify-center py-2 px-3 sm:px-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[10px] sm:text-xs uppercase border border-cyan-400 gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Scan Personnel</button>
                     </>
                   )}
                 </div>
@@ -643,7 +650,7 @@
                       if (group.npcs.length === 0) return null;
                       return (
                         <div key={stationId} className="space-y-3">
-                          <h3 className="text-md text-cyan-400 font-bold tracking-widest uppercase border-b border-slate-700 pb-1 flex items-center gap-2">
+                          <h3 className="text-sm sm:text-md text-cyan-400 font-bold tracking-widest uppercase border-b border-slate-700 pb-1 flex items-center gap-2">
                             {stationId === 'unstationed' ? <i className="fa-solid fa-satellite-dish text-base"></i> : <i className="fa-solid fa-map text-base"></i>} {group.stationName} <span className="text-xs text-slate-600 ml-2">[{group.npcs.length} Records]</span>
                           </h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -656,8 +663,8 @@
                                   <p className="text-xs text-slate-300 mb-3"><span className="text-slate-500">Alt:</span> {saved.npc.altOcc}</p>
                                 </div>
                                 <div className="flex gap-2 border-t border-slate-800 pt-3">
-                                  <button onClick={() => loadEntity('npc', saved)} className="flex-1 py-1.5 bg-slate-800 hover:bg-cyan-600 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
-                                  <button onClick={() => deleteEntity('npc', saved.meta.id)} className="px-3 py-1.5 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
+                                  <button onClick={() => loadEntity('npc', saved)} className="flex-1 py-2 bg-slate-800 hover:bg-cyan-600 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
+                                  <button onClick={() => deleteEntity('npc', saved.meta.id)} className="px-4 py-2 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
                                 </div>
                               </div>
                             ))}
@@ -673,9 +680,9 @@
                     <div className="bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-2 opacity-10"><i className="fa-solid fa-fingerprint text-[100px]"></i></div>
                       <h3 className="text-xs text-cyan-500 font-bold mb-1 tracking-wider uppercase">Subject Identity</h3>
-                      <div className="text-2xl text-white font-black uppercase mb-1 leading-tight">{npcData.name}</div>
-                      <div className="flex flex-wrap gap-2 mt-3 relative z-10">{npcData.descriptors.map((d, i) => <span key={i} className="bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-1 text-xs uppercase font-bold">{d}</span>)}</div>
-                      <div className="mt-5 space-y-3 relative z-10 text-sm">
+                      <div className="text-2xl sm:text-3xl text-white font-black uppercase mb-1 leading-tight">{npcData.name}</div>
+                      <div className="flex flex-wrap gap-2 mt-3 relative z-10">{npcData.descriptors.map((d, i) => <span key={i} className="bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-1 text-[10px] sm:text-xs uppercase font-bold">{d}</span>)}</div>
+                      <div className="mt-5 space-y-3 relative z-10 text-xs sm:text-sm">
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Biometric ID</span><span className="text-slate-200">{npcMeta.id}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Threat Level</span><span className={`${(npcMeta.threat === 'High' || npcMeta.threat === 'Lethal') ? 'text-red-500 font-bold' : 'text-slate-200'}`}>{npcMeta.threat}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Bounty Status</span><span className="text-orange-400">{npcMeta.bounty}</span></div>
@@ -693,16 +700,16 @@
                   </div>
                   <div className="lg:col-span-2 space-y-6">
                     <div className="bg-slate-900 border border-slate-800 flex flex-col sm:flex-row">
-                      <div className="p-6 flex-1 border-b sm:border-b-0 sm:border-r border-slate-800"><h3 className="text-xs text-slate-500 tracking-wider uppercase mb-1">Primary Occupation</h3><p className="text-lg text-white font-bold">{npcData.primaryOcc}</p></div>
-                      <div className="p-6 flex-1"><h3 className="text-xs text-slate-500 tracking-wider uppercase mb-1">Alternate/Clandestine</h3><p className="text-lg text-cyan-400 font-bold">{npcData.altOcc}</p></div>
+                      <div className="p-4 sm:p-6 flex-1 border-b sm:border-b-0 sm:border-r border-slate-800"><h3 className="text-xs text-slate-500 tracking-wider uppercase mb-1">Primary Occupation</h3><p className="text-base sm:text-lg text-white font-bold">{npcData.primaryOcc}</p></div>
+                      <div className="p-4 sm:p-6 flex-1"><h3 className="text-xs text-slate-500 tracking-wider uppercase mb-1">Alternate/Clandestine</h3><p className="text-base sm:text-lg text-cyan-400 font-bold">{npcData.altOcc}</p></div>
                     </div>
-                    <div className="bg-slate-900 border border-slate-800 p-6">
-                      <h3 className="text-md text-white font-bold tracking-wider uppercase mb-3 flex items-center gap-2"><i className="fa-solid fa-eye text-sky-500 text-xl"></i> Observed Quirk</h3>
-                      <p className="text-slate-300 text-md leading-relaxed bg-slate-950 p-4 border border-slate-800 rounded">{npcData.quirk}</p>
+                    <div className="bg-slate-900 border border-slate-800 p-4 sm:p-6">
+                      <h3 className="text-base sm:text-md text-white font-bold tracking-wider uppercase mb-3 flex items-center gap-2"><i className="fa-solid fa-eye text-cyan-500 text-xl"></i> Observed Quirk</h3>
+                      <p className="text-slate-300 text-sm sm:text-md leading-relaxed bg-slate-950 p-4 border border-slate-800 rounded">{npcData.quirk}</p>
                     </div>
-                    <div className="bg-slate-900 border border-slate-800 p-6">
-                      <h3 className="text-md text-white font-bold tracking-wider uppercase mb-3 flex items-center gap-2"><i className="fa-solid fa-wave-square text-orange-500 text-lg"></i> Deep Motivation</h3>
-                      <p className="text-orange-100 text-md leading-relaxed bg-orange-950/20 p-4 border border-orange-900/50 rounded italic font-semibold">Driven primarily by the desire for: <span className="text-orange-400 uppercase not-italic block mt-1">{npcData.motivation}</span></p>
+                    <div className="bg-slate-900 border border-slate-800 p-4 sm:p-6">
+                      <h3 className="text-base sm:text-md text-white font-bold tracking-wider uppercase mb-3 flex items-center gap-2"><i className="fa-solid fa-wave-square text-orange-500 text-lg"></i> Deep Motivation</h3>
+                      <p className="text-orange-100 text-sm sm:text-md leading-relaxed bg-orange-950/20 p-4 border border-orange-900/50 rounded italic font-semibold">Driven primarily by the desire for: <span className="text-orange-400 uppercase not-italic block mt-1">{npcData.motivation}</span></p>
                     </div>
                   </div>
                 </div>
@@ -715,16 +722,16 @@
           {/* ========================================= */}
           {activeTab === 'pirates' && (
             <div className="w-full max-w-7xl animate-in fade-in duration-300">
-              <div className="flex flex-col sm:flex-row justify-between mb-6 border-b border-red-700/50 pb-4">
+              <div className="flex flex-col xl:flex-row justify-between mb-6 border-b border-red-700/50 pb-4">
                 <h2 className="text-xl text-red-500 font-black uppercase flex items-center gap-2"><i className="fa-solid fa-skull text-xl"></i> Pirate Bands</h2>
-                <div className="flex gap-2 mt-3 sm:mt-0">
-                  <button onClick={() => setPirateViewMode(pirateViewMode === 'query' ? 'archives' : 'query')} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${pirateViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
+                <div className="grid grid-cols-2 sm:flex gap-2 mt-4 xl:mt-0 w-full xl:w-auto">
+                  <button onClick={() => setPirateViewMode(pirateViewMode === 'query' ? 'archives' : 'query')} className={`flex items-center justify-center py-2 px-3 sm:px-4 font-bold text-[10px] sm:text-xs uppercase transition-all border gap-2 ${pirateViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
                     <i className="fa-solid fa-box-archive text-sm"></i> Archives ({savedPirates.length})
                   </button>
                   {pirateViewMode === 'query' && (
                     <>
-                      <button onClick={() => saveEntity('pirate')} disabled={isCurrentPirateSaved} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${isCurrentPirateSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentPirateSaved ? 'Saved' : 'Save'}</button>
-                      <button onClick={generatePirate} className="px-4 py-2 bg-red-700 hover:bg-red-600 text-white font-bold text-xs uppercase border border-red-500 flex items-center gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Identify Band</button>
+                      <button onClick={() => saveEntity('pirate')} disabled={isCurrentPirateSaved} className={`flex items-center justify-center py-2 px-3 sm:px-4 font-bold text-[10px] sm:text-xs uppercase transition-all border gap-2 ${isCurrentPirateSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentPirateSaved ? 'Saved' : 'Save'}</button>
+                      <button onClick={generatePirate} className="col-span-2 sm:col-span-1 flex items-center justify-center py-2 px-3 sm:px-4 bg-red-700 hover:bg-red-600 text-white font-bold text-[10px] sm:text-xs uppercase border border-red-500 gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Identify Band</button>
                     </>
                   )}
                 </div>
@@ -742,8 +749,8 @@
                             <p className="text-xs text-slate-400 line-clamp-2 mb-4">{saved.pirate.primaryHustle}</p>
                           </div>
                           <div className="flex gap-2 border-t border-slate-800 pt-3">
-                            <button onClick={() => loadEntity('pirate', saved)} className="flex-1 py-1.5 bg-slate-800 hover:bg-red-700 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
-                            <button onClick={() => deleteEntity('pirate', saved.meta.registryId)} className="px-3 py-1.5 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
+                            <button onClick={() => loadEntity('pirate', saved)} className="flex-1 py-2 bg-slate-800 hover:bg-red-700 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
+                            <button onClick={() => deleteEntity('pirate', saved.meta.registryId)} className="px-4 py-2 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
                           </div>
                         </div>
                       ))}
@@ -756,8 +763,8 @@
                     <div className="bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-2 opacity-5"><i className="fa-solid fa-skull text-[120px] text-red-500"></i></div>
                       <h3 className="text-xs text-red-500 font-bold mb-1 tracking-wider uppercase">Known Alias</h3>
-                      <div className="text-3xl text-white font-black uppercase mb-1">{pirateData.name}</div>
-                      <div className="mt-4 space-y-3 relative z-10 text-sm">
+                      <div className="text-2xl sm:text-3xl text-white font-black uppercase mb-1">{pirateData.name}</div>
+                      <div className="mt-4 space-y-3 relative z-10 text-xs sm:text-sm">
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Registry ID</span><span className="text-slate-200">{pirateMeta.registryId}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Threat Level</span><span className="text-red-500 font-bold">{pirateMeta.threatLevel}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Known Flagship</span><span className="text-slate-200 text-right max-w-[50%] truncate" title={pirateMeta.flagship}>{pirateMeta.flagship}</span></div>
@@ -767,24 +774,24 @@
                     </div>
                   </div>
                   <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-slate-900 border border-slate-800 p-6">
-                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-bullseye text-red-500 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Clan Hustles</h3></div>
+                    <div className="bg-slate-900 border border-slate-800 p-4 sm:p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-bullseye text-red-500 text-xl"></i><h3 className="text-base sm:text-lg text-white font-bold tracking-wider uppercase">Clan Hustles</h3></div>
                       <div className="space-y-4">
                         <div>
                           <h4 className="text-xs text-slate-500 uppercase mb-2">Primary Method of Operation</h4>
-                          <p className="text-slate-200 text-md leading-relaxed border-l-2 border-red-600 pl-4">{pirateData.primaryHustle}</p>
+                          <p className="text-slate-200 text-sm sm:text-md leading-relaxed border-l-2 border-red-600 pl-4">{pirateData.primaryHustle}</p>
                         </div>
                         {pirateData.secondaryHustle && (
                           <div className="pt-2">
                             <h4 className="text-xs text-slate-500 uppercase mb-2">Secondary / Opportunistic Hustle</h4>
-                            <p className="text-slate-400 text-sm leading-relaxed border-l-2 border-slate-600 pl-4">{pirateData.secondaryHustle}</p>
+                            <p className="text-slate-400 text-xs sm:text-sm leading-relaxed border-l-2 border-slate-600 pl-4">{pirateData.secondaryHustle}</p>
                           </div>
                         )}
                       </div>
                     </div>
-                    <div className="bg-slate-900 border-t-2 border-red-800 p-6">
-                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-shield-halved text-red-500 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Main Asset</h3></div>
-                      <p className="text-red-100 text-md leading-relaxed bg-red-950/20 p-4 border border-red-900/50 rounded">{pirateData.mainAsset}</p>
+                    <div className="bg-slate-900 border-t-2 border-red-800 p-4 sm:p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-shield-halved text-red-500 text-xl"></i><h3 className="text-base sm:text-lg text-white font-bold tracking-wider uppercase">Main Asset</h3></div>
+                      <p className="text-red-100 text-sm sm:text-md leading-relaxed bg-red-950/20 p-4 border border-red-900/50 rounded">{pirateData.mainAsset}</p>
                     </div>
                   </div>
                 </div>
@@ -797,16 +804,16 @@
           {/* ========================================= */}
           {activeTab === 'enterprises' && (
             <div className="w-full max-w-7xl animate-in fade-in duration-300">
-              <div className="flex flex-col sm:flex-row justify-between mb-6 border-b border-purple-700/50 pb-4">
+              <div className="flex flex-col xl:flex-row justify-between mb-6 border-b border-purple-700/50 pb-4">
                 <h2 className="text-xl text-purple-400 font-black uppercase flex items-center gap-2"><i className="fa-solid fa-building text-xl"></i> Long Rim Enterprises</h2>
-                <div className="flex gap-2 mt-3 sm:mt-0">
-                  <button onClick={() => setEnterpriseViewMode(enterpriseViewMode === 'query' ? 'archives' : 'query')} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${enterpriseViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
+                <div className="grid grid-cols-2 sm:flex gap-2 mt-4 xl:mt-0 w-full xl:w-auto">
+                  <button onClick={() => setEnterpriseViewMode(enterpriseViewMode === 'query' ? 'archives' : 'query')} className={`flex items-center justify-center py-2 px-3 sm:px-4 font-bold text-[10px] sm:text-xs uppercase transition-all border gap-2 ${enterpriseViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
                     <i className="fa-solid fa-box-archive text-sm"></i> Archives ({savedEnterprises.length})
                   </button>
                   {enterpriseViewMode === 'query' && (
                     <>
-                      <button onClick={() => saveEntity('enterprise')} disabled={isCurrentEnterpriseSaved} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${isCurrentEnterpriseSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentEnterpriseSaved ? 'Saved' : 'Save'}</button>
-                      <button onClick={generateEnterprise} className="px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white font-bold text-xs uppercase border border-purple-500 flex items-center gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Audit Corp</button>
+                      <button onClick={() => saveEntity('enterprise')} disabled={isCurrentEnterpriseSaved} className={`flex items-center justify-center py-2 px-3 sm:px-4 font-bold text-[10px] sm:text-xs uppercase transition-all border gap-2 ${isCurrentEnterpriseSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentEnterpriseSaved ? 'Saved' : 'Save'}</button>
+                      <button onClick={generateEnterprise} className="col-span-2 sm:col-span-1 flex items-center justify-center py-2 px-3 sm:px-4 bg-purple-700 hover:bg-purple-600 text-white font-bold text-[10px] sm:text-xs uppercase border border-purple-500 gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Audit Corp</button>
                     </>
                   )}
                 </div>
@@ -824,8 +831,8 @@
                             <p className="text-xs text-slate-400 line-clamp-2 mb-4">{saved.enterprise.holdings}</p>
                           </div>
                           <div className="flex gap-2 border-t border-slate-800 pt-3">
-                            <button onClick={() => loadEntity('enterprise', saved)} className="flex-1 py-1.5 bg-slate-800 hover:bg-purple-700 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
-                            <button onClick={() => deleteEntity('enterprise', saved.meta.registryId)} className="px-3 py-1.5 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
+                            <button onClick={() => loadEntity('enterprise', saved)} className="flex-1 py-2 bg-slate-800 hover:bg-purple-700 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
+                            <button onClick={() => deleteEntity('enterprise', saved.meta.registryId)} className="px-4 py-2 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
                           </div>
                         </div>
                       ))}
@@ -838,8 +845,8 @@
                     <div className="bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
                       <div className="absolute top-0 right-0 p-2 opacity-5"><i className="fa-solid fa-landmark text-[120px] text-purple-500"></i></div>
                       <h3 className="text-xs text-purple-400 font-bold mb-1 tracking-wider uppercase">Corporate Entity</h3>
-                      <div className="text-3xl text-white font-black uppercase mb-1 leading-none">{enterpriseData.name}</div>
-                      <div className="mt-6 space-y-3 relative z-10 text-sm">
+                      <div className="text-2xl sm:text-3xl text-white font-black uppercase mb-1 leading-none">{enterpriseData.name}</div>
+                      <div className="mt-6 space-y-3 relative z-10 text-xs sm:text-sm">
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Registry ID</span><span className="text-slate-200">{enterpriseMeta.registryId}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Est. Market Cap</span><span className="text-green-400 font-bold">{enterpriseMeta.marketCap}</span></div>
                         <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Public Face</span><span className="text-slate-200">{enterpriseMeta.publicFace}</span></div>
@@ -851,19 +858,19 @@
                       <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-users text-purple-400 text-lg"></i><h3 className="text-md text-white font-bold tracking-wider uppercase">Known Representatives</h3></div>
                       <div className="space-y-3">
                         {enterpriseData.representatives.map((rep, idx) => (
-                          <p key={idx} className="text-slate-300 text-sm leading-relaxed border-l-2 border-purple-500 pl-3">{rep}</p>
+                          <p key={idx} className="text-slate-300 text-xs sm:text-sm leading-relaxed border-l-2 border-purple-500 pl-3">{rep}</p>
                         ))}
                       </div>
                     </div>
                   </div>
                   <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-slate-900 border border-slate-800 p-6">
-                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-briefcase text-purple-400 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Primary Holdings</h3></div>
-                      <p className="text-slate-200 text-md leading-relaxed bg-slate-950 p-4 border border-slate-800 rounded">{enterpriseData.holdings}</p>
+                    <div className="bg-slate-900 border border-slate-800 p-4 sm:p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-briefcase text-purple-400 text-xl"></i><h3 className="text-base sm:text-lg text-white font-bold tracking-wider uppercase">Primary Holdings</h3></div>
+                      <p className="text-slate-200 text-sm sm:text-md leading-relaxed bg-slate-950 p-4 border border-slate-800 rounded">{enterpriseData.holdings}</p>
                     </div>
-                    <div className="bg-slate-900 border-t-2 border-purple-800 p-6">
-                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-shield-halved text-purple-400 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Overall Strength</h3></div>
-                      <p className="text-purple-100 text-md leading-relaxed bg-purple-950/20 p-4 border border-purple-900/50 rounded">{enterpriseData.strength}</p>
+                    <div className="bg-slate-900 border-t-2 border-purple-800 p-4 sm:p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-shield-halved text-purple-400 text-xl"></i><h3 className="text-base sm:text-lg text-white font-bold tracking-wider uppercase">Overall Strength</h3></div>
+                      <p className="text-purple-100 text-sm sm:text-md leading-relaxed bg-purple-950/20 p-4 border border-purple-900/50 rounded">{enterpriseData.strength}</p>
                     </div>
                   </div>
                 </div>
@@ -896,5 +903,6 @@
   </script>
 </body>
 </html>
+
 
 ```
