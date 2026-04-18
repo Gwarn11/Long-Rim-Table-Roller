@@ -1,0 +1,900 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Omninet Databank: Long Rim</title>
+  
+  <!-- React and ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel for in-browser JSX parsing -->
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-300 font-mono">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ==========================================
+    // 1. CONSTANTS & DATA TABLES
+    // ==========================================
+
+    // --- STATION DATA ---
+    const seeds = {
+      1: "Abandoned Union Navy shipyard, purchased and sold over and over to successive owners until it was eventually hauled out to the Rim. The population might be anywhere from minor to massive.",
+      3: "A pirate colony based around an old surveying ship that has been permanently fused to its escorts. Now, it is nominally governed by an anarchist pirate queen. The colony keeps its doors open to outsiders but moves every 3-5 local days to avoid detection, bristling with weapons and thick with armed guards.",
+      5: "A well-known IPS-Northstar refueling station, neutral ground for trade and services. This station is fequented by IPS-N's Trunk Security and serves as a local base for the corpro's patrol cutters. The central ring is full of the parked ships and charter captains ready and willing to run any job you need, for the right price.",
+      7: "A long-abandoned mining colony, drilled deep into an enormous asteroid. Habitation is centered around its warm reactor core. The hundreds of miles of tunnels outside are more or less empty, you think. People disappear here often.",
+      9: "A quiet old Union Navy outpost, barnacled with merchants and traders, small diplomatic offices representing the major powers, serviceable bars, official and unofficial checkpoints, and people willing to get you what you need if you've got the manna to cover it. This outpost is staffed by bored Union personnel mostly there to run customs checks.",
+      11: "An enormous domed Volador trade bazaar with stable artificial gravity. Although they originally built it, los Voladores have not been here for hundreds of subjective years. It has largely been taken over by outside construction, and now it serves as the capital station for a powerful enterprise.",
+      13: "A collection of salvaged freighters, lashed together to form a massive, rambling habitat full of dark corners, hidden warrens, and other secrets. Theoretically, it can even move if enough of the old ship drives can be re-ignited.",
+      15: "A community of hydroponic farming habitats and humble agricultural families built among a collection of leashed asteroids, with a central hub for trade. This station is rumored to be a popular \"retirement\" destination for Horizon collectivists, and it may even be home to a \"free\" NHP. It's rather calm and nice.",
+      17: "A decommissioned Harrison Armory legion outpost from the first Dawnline colonization push, now a playground for long-haul freighter crews. It is filled with nightclubs, gambling dens, and pleasure houses, and as with most places in the Rim, anything goes here if you've got the manna. This station is popular with professional pirates from many enterprises, who see it as a neutral ground where they can have a good time.",
+      19: "A hollowed-out asteroid or massive cylinder ship with an expansive station built on the inside surface, spinning at a comfortable 1 g. The metropolis on the inside is home to thousands of souls, and has petitioned Union for official state recognition."
+    };
+
+    const names = [
+      ["Hades", "Hellmouth", "Pandemonium", "Devildance", "Tartarus", "Umber"],
+      ["Deliverance", "Salvation", "Gate of Heaven", "Nirvana", "Gloria", "Bardo"],
+      ["Persistence", "Samsara", "Resolute", "Redoubt", "Dauntless", "Stableground"],
+      ["Far Point", "Highwater", "Overlander", "Horizon's End", "Rim 'o The World", "___ End"],
+      ["Borea", "Tundra", "Percipita", "Cumulus", "Alpine", "Frost"],
+      ["Petergate", "Harper's Hope", "Rose Landing", "Salahville", "Ramahall", "Law's Point"],
+      ["Fat Chance", "Hardly Truly", "Rollem", "Freerad", "Lucky", "... Casino..."],
+      ["Raftland", "The Leash", "Harbor", "Dry-dock", "Null Pier", "___ Maritime"],
+      ["Terminus", "Interchange", "Switch", "Hub", "Terminal", "Apex"],
+      ["Barbadas", "Arruda", "Signas", "Mollitempos", "Tzatazi", "Garudanas"],
+      ["___ Hole", "___ Pit", "___ Depths", "___ Deep", "Lower ___", "Under ___"],
+      ["Goose", "Eagle", "Falcon", "Raptor", "Avia", "Duck"],
+      ["___ Fields", "___ Garden", "___ Orchards", "___ Forest", "Nest", "Dell"],
+      ["Icebreaker", "Derrick", "Well", "Carver", "Site", "Drill"],
+      ["EM 51817"],
+      ["Nasser's Cleft", "___ Canyon", "___ Fissure", "Spires", "Arches", "Cliff"],
+      ["The Olympic", "Sunstar", "The Heavens", "Comet's Tail", "The Glittering Arc", "Diadem 1"],
+      ["Saynomore", "Anythingelse", "Cannagetcha", "Pickr'Poison", "Namaprice", "F'sale"],
+      ["The Endless Gallery", "Mirrorhell", "The Silent Station", "Derelict 42B", "Titan", "Solo Gate"],
+      ["Nowhere", "The Eye", "Blink's Gate", "Coma Station", "Voidhall", "The Concordance"]
+    ];
+
+    const districts = [
+      "The Shambles", "Dockside", "___ Fields", "___ Bay", "Core", "Mall", "___ Lower", "Storage", "Ring Central", "Nest", "The Chokey", "Upper ___", "___ Processing", "River Street", "Warrens", "Down Central", "Spacer's Walk", "Narrows", "Spires", "Geo-___"
+    ];
+
+    const purposes = {
+      1: "Asteroid Mining", 3: "General resupply for freighters", 5: "Smuggling cove", 7: "Hydroponic or terrestrial-analogous farming", 9: "Open bazaar or trading hub", 11: "Entertainment and nightlife", 13: "Military post", 15: "Mercenary Haven/Drinking Hole", 17: "Last fuel stop before the void", 19: "Criminal enterprise"
+    };
+
+    const curiosities = [
+      "Open air produce market for local families that appears along the spinal corridor once every three core standard days. The produce is grown in bags and tends to be oddly shaped and very juicy. Most spacers prefer it that way.",
+      "A wizened hermit who can see the future with about 50% accuracy for any given reading. They can't see more than a day or so into the future and live mostly off donations. They claim to be a former operative of the UIB – Union Intelligence Bureau.",
+      "A large population of feral kraits – dawg-sized crustaceans that have adapted almost perfectly for life on stations. They make excellent pets, produce very little waste, and consume very little food and water.",
+      "A cluttered chop shop for cyberware and prosthetics, as well as a low-cost wetware-installation and repair facility. Everything is clean, despite appearances.",
+      "A water hub where locals must show up daily to receive their water ration. Over time, the hub has transformed into an impromptu social club and cafe.",
+      "A set of exposed thermal pipes used by most of the locals to do their cooking despite many complaints from engineering.",
+      "A HORUS technocult blister attached to the side of the station by a punch corridor and several umbilicals. Station admin steadfastly denies their existence.",
+      "A gang of station kids who will trade information for off-station food, with a vast preference for candy. They are total shitkickers in a fight.",
+      "A man called the Groundskeeper who has a reputation as a master forger. He can spoof most IFF signatures, ship transponders, badges of office, and official papers.",
+      "An old Schedule 2 printer, although it is in terrible shape and clogged with back-orders.",
+      "\"The best burger joint in the Orion Arm\", run by a Sparri technoshaman who claims to have invented a new stasis freezing technique for keeping meat fresh.",
+      "A humble shrine or fine temple to Christ the Buddha, usually adorned with lanterns. Please remove your shoes before entering.",
+      "A cramped but characterful cinema run by an enthusiast who grew up in the Rim. Features a well-curated program of old films.",
+      "An opulent pleasure barge has been stranded at the station for several weeks. The Smith-Shimano executive who resides there is extremely upset.",
+      "A gambling and gaming hall built alongside the main concourse. It is populated at all hours and doubles as a bar and smoking lounge.",
+      "An inactive IPS-N Tortuga has been welded into the station wall and serves as a power source. It is seen as a mascot or guardian.",
+      "Down a back-alley maintenance corridor behind a bar, seekers can find gliss. These crustaceans have powerful narcotic effects.",
+      "An overgrown hydro farm that has broken into the station's pipes, causing large parts of the station to become humid and lush with dark green or purple foliage.",
+      "A weapons dealer does business out of an old apartment stack. They employ a large population of aging and imported ISP-N subalterns to assist.",
+      "The House of Cats: a jazz cafe, bar, restaurant, gambling parlor, and house of courtesans. Garishly decorated in the style of old Terran palatial estates."
+    ];
+
+    const problems = [
+      "The station's orbit is decaying and it will fall into the nearest star or planetary body in the next year or so.",
+      "A cycle of blood debts has led to a huge feud between several families on the station. Skirmishes are common.",
+      "The station's life support systems are in desperate need of repair. The engineering team sent into Life Support never returned.",
+      "A Volador has died of (seemingly) natural causes while on a diplomatic mission: there is absolutely no protocol for how to deal with burial.",
+      "The station administrator's child has gone missing.",
+      "The station is infested with a population of unusually large predatory kraits currently plaguing the maintenance decks.",
+      "A corrupt political boss holds sway over station resources and refuses to budge without proper deference or bribes.",
+      "There's been another gruesome murder – the third in a month. It's clear now that there's a serial killer on the station.",
+      "The stations' spin sections are out of alignment, causing \"gravity\" outages and wild fluctuations.",
+      "An unregistered skip vessel from the Dawnline Shore has docked. Passengers claim to be political dissidents, sparking a divisive debate.",
+      "A pirate or marauder band has parked nearby and frequently raids the station or its visitors to exact tribute.",
+      "An apocalyptic cult has filtered into the station, placing some of their adherents in important infrastructure and security positions.",
+      "The station is a de-facto haven for narcotics smugglers, and a pair of rival enterprises seem ready to \"negotiate\" ownership.",
+      "Supplies are critically short and hoarding is commonplace. Regular shipments have been \"delayed\" by a local cordon.",
+      "The station's population has grown massively, putting a significant strain on resources. Some advocate for opening up long-sealed sections...",
+      "A popular revolution has recently overthrown the station's previous owners and the situation is still volatile.",
+      "The station was recently abandoned by Harrison Armory, who pulled almost all funding, resources, and security and left without explanation.",
+      "A Sparri mercenary company rolls through at regular intervals and trashes the place with wild partying.",
+      "A HORUS cell keeps threatening to redirect an asteroid into the station if they are not paid at regular intervals.",
+      "The station is a neutral territory for several Rim enterprises. When the main concourse is bombed, the enterprises all suspect each other."
+    ];
+
+    // --- NPC DATA ---
+    const npcDescriptors = ["Exhausted", "Sexy", "Filthy", "Corpulent", "Cocky", "Starving", "Gloomy", "Stranded", "Passionate", "Loud", "Stoic", "Part-time", "Sweaty", "Cigarette-Smoking", "Flamboyant", "Beefy", "Nervous", "Gruff", "Well-Armed", "Thrifty"];
+    const npcPrimaryOcc = ["Foreman", "Stevedore", "Goon", "\"Sheriff\"", "Bureaucrat", "Fence", "Sex Worker", "Security Guard", "Gravity Racer", "Political Boss", "Nearlight drive technician", "Monk", "Station Engineer", "Private Eye", "Harbor, Charter, or Enterprise Pilot", "Night Mayor", "Marine", "Urchin", "Medical Technician", "Bounty Hunter"];
+    const npcAltOcc = ["Chop shop doctor", "Petty Thief", "Corpro Intelligence (Undercover)", "Smuggler", "Stowaway from the Core, seeking passage out to the Dawnline Shore", "Refugee from the Dawnline Shore, seeking safe ground", "Dealer in exotic flora and fauna", "Remote-activated killer, aware or not of their true nature", "Swindler", "Weapons dealer", "Zero-g Farmer", "Pilgrim", "Ungrateful partisan", "Muckraker", "HORUS cell member", "Local Fixer", "Union or Harrison Armory Veteran", "Addict (brighteyes, gliss, gazer, etc)", "Horizon collectivist", "Pit fighter"];
+    const npcQuirks = ["An oversized, distinctive, or otherwise notable hat or headgear.", "One eye is covered by an eye patch, is a noticeable prosthetic, or has been replaced with something decorative.", "Old burn scars, visible even when clothed.", "Constantly reaching for, moving with reference to, or tapping weapon.", "Dresses in garish clothing.", "Often drunk, or otherwise intoxicated.", "A pathological liar (you think).", "Very well connected, or related to about half the station.", "Knows jack shit about mechs, lancers, or pilots, but pretends they do.", "Has an exotic pet.", "Much taller than a person born downwell due to a life spent in artificial gravity.", "Often carries pamphlets of Ungrateful, HORUS, or Horizon propaganda.", "Has an excellent mental map of the station.", "Wears cracked eyeglasses.", "Has one or more visibly cybernetic limbs, in poor repair and condition.", "Used to be a lancer.", "Covered head to toe in Sparri saga tattoos, may or may not be Sparri.", "Does not speak Union Common, but can communicate using an automatic translator.", "Impressive hair or facial hair.", "Often followed, willingly or not, by innumerable dock rats or street urchins."];
+    const npcDesires = { 1: "Access to", 3: "Safety of", 5: "Information on", 7: "Transport for", 9: "Possession of", 11: "Elimination of", 13: "Hiding of", 15: "Cover for", 17: "Return of", 19: "Retribution for" };
+    const npcObjects = { 1: "Food.", 3: "Dangerous, rare or expensive flora or fauna.", 5: "Family.", 7: "Weapons.", 9: "Debt.", 11: "High quality narcotics.", 13: "Reputation.", 15: "Blackmail.", 17: "Workers.", 19: "A local politician, VIP, or enterprise middleman." };
+    const firstNames = ["Jax", "Elena", "Kael", "Sam", "Tariq", "Mila", "Rin", "Voss", "Ogun", "Priya", "Cass", "Bram", "Nyx"];
+    const callsigns = ["Rust", "Ghost", "Echo", "Static", "Brick", "Neon", "Null", "Cipher", "Apex", "Glitch", "Scrap", "Jackal"];
+
+    // --- PIRATE DATA ---
+    const pirateNames1 = ["Colossal", "Skull", "Vector", "Red", "Realspace", "Tiger", "Fifty Talent", "108", "The All-", "Strong", "The Big", "The Long", "The/Los", "The Free", "The Golden", "Pack", "Private Company", "Unlimited", "Transit", "Skyside"];
+    const pirateNames2 = ["Devils", "Gods", "Family", "Tigers", "Company", "Hunters", "Dogs", "Triad", "Kings", "Solutions Unlimited", "Gunners", "Howlers", "Calaveras", "Runners", "Group", "Bosses", "Patrol", "Rimside", "Interstellar", "Interstation"];
+    const pirateHustles = {
+      1: "Toll taking: Exaction of rent, bribes, tribute, or labor from local stations, freighters, or other passers-by.",
+      3: "Trafficking: Slavery and the smuggling of people (natural-born or clones), typically for unpaid labor.",
+      5: "Hijacking: Direct capture of ships, typically for ransom, but sometimes for parts.",
+      7: "Smuggling: Surreptitious transport of goods (illicit, normal, or unsavory) to avoid tariffs, taxes, embargoes, blockades, or fees.",
+      9: "Monopoly: Absolute control of a necessary resource – like fuel, water, or food – in the local area.",
+      11: "Kidnapping: Capture of VIPs, typically as hostages to secure ransom payments.",
+      13: "Raiding: Direct, violent assault on passing ships or vulnerable stations to forcibly take resources or people for use or sale.",
+      15: "Mercenaries: Soldiers for hire on a contract basis.",
+      17: "Narcotics: Manufacture and distribution of narcotics.",
+      19: "Horde: A rare type of group, constantly on the move. Hordes have no allies but may wield influence over cowed or oppressed populations. Survive solely by raiding stations and ships. Typically grow by pressing captives into service or conscripting from local populations at gunpoint. Rarely last more than a few months before dispersing."
+    };
+    const pirateAssets = {
+      1: "A fully armed warship kept in excellent shape. Taken from Union or a state navy. Has a spinal cannon or significant ordinance, plentiful batteries, and is capable of destroying a station. Used as a mobile base of operations.",
+      3: "A well-armed squad of 4-5 Elite mechs.",
+      5: "An impeccably hidden base, located in a cloud of debris or a dead zone that confuses sensors.",
+      7: "A titanic, unique mech. (Size 4 mech with the Ultra template). Well-armored enough to tackle ships and may require multiple pilots to crew.",
+      9: "An NHP that acts as a powerful advisor or a de facto leader. Maintained by a team of skilled technicians, granting a powerful advantage.",
+      11: "A powerful hacking corps that works out of an old comms station. Capable of stealing ships and redirecting supplies without firing a shot. Usually avoids direct conflict.",
+      13: "A long-range, space-to-space kinetic weapon platform that can easily disable passing ships and threaten stations. Power source is buried deep inside an asteroid. Can only fire once every hour or so.",
+      15: "A small army (50-100 units) of combat subalterns armed with energy weapons.",
+      17: "A sub-blink snare – a temperamental, nonlethal anti-ship system that can disable ships' reactors without harming their crew. Needs a central activator on a ship or nearby station to hold a ship in place.",
+      19: "A leashed asteroid at least 6 miles (or 10 kilometers) in diameter. Can be redirected, albeit slowly, to threaten stations or ships."
+    };
+
+    // --- ENTERPRISE DATA ---
+    const enterprisePrefixes = ["The", "New", "Rim", "Dawnline", "Apex", "Omni", "Core", "Far", "United", "Stellar", "Astral", "Void", "Iron"];
+    const enterpriseNouns = ["Syndicate", "Consortium", "Combine", "Holdings", "Group", "Trust", "Cartel", "Exchange", "Network", "Corporation", "Enterprises"];
+    const enterpriseHoldings = {
+      1: "A fleet of asteroids rich in rare minerals, bound into a closely-guarded orbit and protected by loyal cosmopolitan guards.",
+      3: "The only pilots capable of navigating a treacherous corridor of null-blink space, and the knowledge to train more.",
+      5: "The best supply of fresh water in the region, and the infrastructure to hygienically process, package, and distribute it.",
+      7: "A collection of fabrication plants ready to produce GMS hulls, components, and parts; for the right price, the Enterprise can also procure licensed materials.",
+      9: "A reliable method of contacting los Voladores, plus first pick of prime Volador artifacts, goods, and technology for outfitting their stations.",
+      11: "The contract to guarantee passage for IPS-N bureaucrats from Rào Cỏ Station to the Dawnline Shore, as well as support from IPS-N Trunk Security forces.",
+      13: "The ability to produce blink transponder codes capable of clearing Union code-checks, and the largesse to reward loyalty with them.",
+      15: "A monopoly on viable cloning processes and the accounts of the leadership of many other enterprises.",
+      17: "Strength guaranteed – via clandestine channels – by a major power with interests in the Dawnline Shore (e.g. Harrison Armory or the Karrakin Trade Barons).",
+      19: "The standard currency that Long Rim populations use for banking and trade – until they can convert it into manna, that is."
+    };
+    const enterpriseReps = {
+      1: "A kind but low-ranking member. They can't offer any real support on behalf of the Enterprise other than their word and the largesse of their commanding officer, manager, or foreman.",
+      3: "A middleweight bureaucrat with an ear to the ground. While loyal to their Enterprise, they count you as a good friend.",
+      5: "An experienced harbor pilot, recently promoted by their Enterprise to the post of customs master at an important station.",
+      7: "The leader of a pirate crew that has been contracted to work with the Enterprise.",
+      9: "An officer in the Enterprise's corps of loyal guards.",
+      11: "A member of the Enterprise's station-level police force (e.g., a beat cop, a detective, or similar).",
+      13: "A fixer for the Enterprise.",
+      15: "A ship captain who flies under the Enterprise's flag.",
+      17: "The kid of an Enterprise's leader.",
+      19: "The leader of the Enterprise, who will always grant you an audience – as long as you stay on their good side and remember who is in charge."
+    };
+    const enterpriseStrength = {
+      1: "Meagre. The Enterprise is allowed to exist by the other enterprises because it is a useful dumping ground, patsy, or easy victim. No one works with it for long, and it is likely only a matter of time before its last remaining station falls to one of the other Enterprises.",
+      3: "Modest. This Enterprise controls a modest complement of stations with a small but loyal guard corps; the bulk of its strength comes from outside hires, who its leaders can afford to pay for their loyalty.",
+      5: "Middling. The number of loyal guard to mercenaries is nearly 1:1. This Enterprise likely commands a series of popular but noncritical stations.",
+      7: "Substantial. The Enterprise holds an important checkpoint, fueling, or resupply station, and it can afford to pay its mercenaries well and then some. Its leadership feels comfortable bullying smaller Enterprises when necessary, but they generally stay in their own lane.",
+      9: "Mighty. In command of a large fighting force and mighty economic base, this Enterprise can field older-model fighters, bombers, and corvettes, and is likely on the radar of the major powers. Its leaders aren't afraid to throw their power around.",
+      11: "Focused (Legitimate Connections). This Enterprise has clandestine or overt connections to one of the major powers with an interest in the Dawnline Shore. This legitimacy insulates it from some of that power's enforcement activities and provides marked economic benefits as well.",
+      13: "Focused (Knowledge). This Enterprise may or may not be mighty in military strength, but it guards a deep, secret knowledge valued by all of the other Enterprises and at least one major power.",
+      15: "Focused (Coin). This Enterprise is one of the wealthiest and likely sets the terms by which all others conduct their markets and economic affairs. Managing the economy is a hassle for the other Enterprises, but participating in it is an unassailable boon.",
+      17: "Focused (Goods). This Enterprise has multiple monopolies on necessary luxury goods that are difficult or costly to procure. The other Enterprises generally all have a favorable view of this Enterprise on account of the goods they produce.",
+      19: "Titanic. Controls multiple refurbished warships crewed by veteran spacers and loyal, disciplined marines. Commands thousands of well-seasoned fighters and a few pilots. No other Enterprise will face this one down. The major powers have extensive dossiers on them."
+    };
+
+    // --- HELPERS ---
+    const getPairedValue = (obj, roll) => {
+      const key = roll % 2 === 0 ? roll - 1 : roll;
+      return obj[key];
+    };
+    const rollD20 = () => Math.floor(Math.random() * 20) + 1;
+    const randomFrom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    // ==========================================
+    // 2. MAIN APPLICATION COMPONENT
+    // ==========================================
+
+    const App = () => {
+      // Global Navigation
+      const [activeTab, setActiveTab] = useState('stations'); // 'stations' | 'npcs' | 'pirates' | 'enterprises'
+      const fileInputRef = useRef(null);
+      
+      // --- Station State ---
+      const [stationData, setStationData] = useState(null);
+      const [stationMeta, setStationMeta] = useState(null);
+      const [savedStations, setSavedStations] = useState([]);
+      const [stationViewMode, setStationViewMode] = useState('query');
+      const [stationSettings, setStationSettings] = useState({ districts: 1, curiosities: 2, problems: 2 });
+      const [showStationModal, setShowStationModal] = useState(false);
+
+      // --- NPC State ---
+      const [npcData, setNpcData] = useState(null);
+      const [npcMeta, setNpcMeta] = useState(null);
+      const [savedNpcs, setSavedNpcs] = useState([]);
+      const [npcViewMode, setNpcViewMode] = useState('query');
+      const [selectedHomeStation, setSelectedHomeStation] = useState('unstationed');
+
+      // --- Pirate State ---
+      const [pirateData, setPirateData] = useState(null);
+      const [pirateMeta, setPirateMeta] = useState(null);
+      const [savedPirates, setSavedPirates] = useState([]);
+      const [pirateViewMode, setPirateViewMode] = useState('query');
+
+      // --- Enterprise State ---
+      const [enterpriseData, setEnterpriseData] = useState(null);
+      const [enterpriseMeta, setEnterpriseMeta] = useState(null);
+      const [savedEnterprises, setSavedEnterprises] = useState([]);
+      const [enterpriseViewMode, setEnterpriseViewMode] = useState('query');
+
+      // ==========================================
+      // 3. GENERATORS
+      // ==========================================
+
+      const generateStation = () => {
+        const selectedName = randomFrom(names[rollD20() - 1]);
+        const distList = [];
+        const maxDistricts = Math.min(stationSettings.districts, districts.length);
+        while(distList.length < maxDistricts) {
+          const dName = districts[rollD20() - 1];
+          if (!distList.includes(dName)) distList.push(dName);
+        }
+        const majorPurpose = getPairedValue(purposes, rollD20());
+        let minorPurpose = null;
+        if (Math.random() > 0.5) { 
+          let minorRoll = rollD20();
+          while (getPairedValue(purposes, minorRoll) === majorPurpose) minorRoll = rollD20();
+          minorPurpose = getPairedValue(purposes, minorRoll);
+        }
+
+        const curioList = [];
+        while(curioList.length < Math.min(stationSettings.curiosities, curiosities.length)) {
+          const text = curiosities[rollD20() - 1];
+          if (!curioList.includes(text)) curioList.push(text);
+        }
+        const probList = [];
+        while(probList.length < Math.min(stationSettings.problems, problems.length)) {
+          const text = problems[rollD20() - 1];
+          if (!probList.includes(text)) probList.push(text);
+        }
+
+        setStationData({
+          name: selectedName, districts: distList, majorPurpose, minorPurpose, 
+          seed: getPairedValue(seeds, rollD20()), curiosities: curioList, problems: probList
+        });
+
+        setStationMeta({
+          threat: randomFrom(["Minimal", "Elevated", "Severe", "Critical", "Unknown", "Sub-nominal"]),
+          gravity: randomFrom(["0g (Null)", "0.3g (Micro)", "1.0g (Standard)", "Variable", "Rotational (0.8g)"]),
+          population: randomFrom(["< 1,000 (Outpost)", "5,000 - 10,000 (Hub)", "50,000+ (Metropolis)", "Unknown (Ghost)", "Variable (Nomadic)"]),
+          mannaRate: (Math.random() * 8 + 0.5).toFixed(2),
+          uptime: Math.floor(Math.random() * 90000) + 1000,
+          registryId: `LR-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
+        });
+        setStationViewMode('query');
+      };
+
+      const generateNpc = () => {
+        let roll1 = rollD20(), roll2 = rollD20();
+        while (roll1 === roll2) roll2 = rollD20();
+
+        const subjectName = `${randomFrom(firstNames)} "${randomFrom(callsigns)}"`;
+        setNpcData({
+          name: subjectName,
+          descriptors: [npcDescriptors[roll1 - 1], npcDescriptors[roll2 - 1]],
+          primaryOcc: npcPrimaryOcc[rollD20() - 1],
+          altOcc: npcAltOcc[rollD20() - 1],
+          quirk: npcQuirks[rollD20() - 1],
+          motivation: `${getPairedValue(npcDesires, rollD20())} ${getPairedValue(npcObjects, rollD20())}`
+        });
+
+        setNpcMeta({
+          threat: randomFrom(["Harmless", "Low", "Moderate", "High", "Lethal"]),
+          bounty: Math.random() > 0.7 ? `${Math.floor(Math.random() * 50000) + 1000} Manna` : "None Listed",
+          affiliation: randomFrom(["Unaffiliated", "Harrison Armory", "IPS-N", "Smith-Shimano", "HORUS", "Sparri", "Volador", "Local Enterprise"]),
+          omninetFootprint: randomFrom(["Ghost", "Sparse", "Standard", "Highly Active", "Encrypted"]),
+          id: `PNL-${Math.random().toString(36).substr(2, 8).toUpperCase()}`
+        });
+        setSelectedHomeStation('unstationed');
+        setNpcViewMode('query');
+      };
+
+      const generatePirate = () => {
+        const namePart1 = pirateNames1[rollD20() - 1];
+        const namePart2 = pirateNames2[rollD20() - 1];
+        const pName = `${namePart1} ${namePart2}`;
+        
+        const primaryHustle = getPairedValue(pirateHustles, rollD20());
+        let secondaryHustle = null;
+        if (Math.random() > 0.5) {
+          let minorRoll = rollD20();
+          while (getPairedValue(pirateHustles, minorRoll) === primaryHustle) minorRoll = rollD20();
+          secondaryHustle = getPairedValue(pirateHustles, minorRoll);
+        }
+
+        setPirateData({
+          name: pName,
+          primaryHustle,
+          secondaryHustle,
+          mainAsset: getPairedValue(pirateAssets, rollD20())
+        });
+
+        setPirateMeta({
+          flagship: `The ${randomFrom(names[Math.floor(Math.random() * names.length)])}`,
+          opRadius: `${Math.floor(Math.random() * 40) + 5} AU`,
+          totalBounty: `${(Math.random() * 500 + 50).toFixed(2)}k Manna`,
+          registryId: `PRT-${Math.random().toString(36).substr(2, 5).toUpperCase()}`,
+          threatLevel: randomFrom(["Nuisance", "Hazardous", "Deadly", "System-Threatening"])
+        });
+        setPirateViewMode('query');
+      };
+
+      const generateEnterprise = () => {
+        const entName = `${randomFrom(enterprisePrefixes)} ${randomFrom(enterpriseNouns)}`;
+        
+        const reps = [];
+        const repCount = Math.random() > 0.6 ? 2 : 1;
+        while(reps.length < repCount) {
+          const rep = getPairedValue(enterpriseReps, rollD20());
+          if (!reps.includes(rep)) reps.push(rep);
+        }
+
+        setEnterpriseData({
+          name: entName,
+          holdings: getPairedValue(enterpriseHoldings, rollD20()),
+          strength: getPairedValue(enterpriseStrength, rollD20()),
+          representatives: reps
+        });
+
+        setEnterpriseMeta({
+          marketCap: `${(Math.random() * 900 + 10).toFixed(2)}B Manna`,
+          mercContracts: Math.floor(Math.random() * 15),
+          publicFace: randomFrom(["Benevolent", "Abrasive", "Shadowy", "Bureaucratic", "Aggressive"]),
+          registryId: `ENT-${Math.random().toString(36).substr(2, 5).toUpperCase()}`
+        });
+        setEnterpriseViewMode('query');
+      };
+
+      // Initial loads
+      useEffect(() => {
+        generateStation();
+        generateNpc();
+        generatePirate();
+        generateEnterprise();
+      }, []);
+
+      // ==========================================
+      // 4. ARCHIVE / DATA MANAGEMENT LOGIC
+      // ==========================================
+
+      const saveEntity = (type) => {
+        if (type === 'station' && stationData && !savedStations.some(s => s.meta.registryId === stationMeta.registryId)) {
+          setSavedStations([...savedStations, { station: stationData, meta: stationMeta }]);
+        }
+        if (type === 'npc' && npcData && !savedNpcs.some(n => n.meta.id === npcMeta.id)) {
+          setSavedNpcs([...savedNpcs, { npc: npcData, meta: npcMeta, homeStationId: selectedHomeStation }]);
+        }
+        if (type === 'pirate' && pirateData && !savedPirates.some(p => p.meta.registryId === pirateMeta.registryId)) {
+          setSavedPirates([...savedPirates, { pirate: pirateData, meta: pirateMeta }]);
+        }
+        if (type === 'enterprise' && enterpriseData && !savedEnterprises.some(e => e.meta.registryId === enterpriseMeta.registryId)) {
+          setSavedEnterprises([...savedEnterprises, { enterprise: enterpriseData, meta: enterpriseMeta }]);
+        }
+      };
+
+      const deleteEntity = (type, id) => {
+        if (type === 'station') {
+          setSavedStations(savedStations.filter(s => s.meta.registryId !== id));
+          setSavedNpcs(savedNpcs.map(n => n.homeStationId === id ? { ...n, homeStationId: 'unstationed' } : n));
+        }
+        if (type === 'npc') setSavedNpcs(savedNpcs.filter(n => n.meta.id !== id));
+        if (type === 'pirate') setSavedPirates(savedPirates.filter(p => p.meta.registryId !== id));
+        if (type === 'enterprise') setSavedEnterprises(savedEnterprises.filter(e => e.meta.registryId !== id));
+      };
+
+      const loadEntity = (type, savedItem) => {
+        if (type === 'station') { setStationData(savedItem.station); setStationMeta(savedItem.meta); setStationViewMode('query'); }
+        if (type === 'npc') { setNpcData(savedItem.npc); setNpcMeta(savedItem.meta); setSelectedHomeStation(savedItem.homeStationId); setNpcViewMode('query'); }
+        if (type === 'pirate') { setPirateData(savedItem.pirate); setPirateMeta(savedItem.meta); setPirateViewMode('query'); }
+        if (type === 'enterprise') { setEnterpriseData(savedItem.enterprise); setEnterpriseMeta(savedItem.meta); setEnterpriseViewMode('query'); }
+      };
+
+      const exportDatabank = () => {
+        const dataStr = JSON.stringify({ stations: savedStations, npcs: savedNpcs, pirates: savedPirates, enterprises: savedEnterprises }, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `rim-databank-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      };
+
+      const handleImport = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const importedData = JSON.parse(e.target.result);
+            
+            let newStations = [], newNpcs = [], newPirates = [], newEnterprises = [];
+            if (Array.isArray(importedData)) newStations = importedData; // backwards compat
+            else {
+              if (importedData.stations) newStations = importedData.stations;
+              if (importedData.npcs) newNpcs = importedData.npcs;
+              if (importedData.pirates) newPirates = importedData.pirates;
+              if (importedData.enterprises) newEnterprises = importedData.enterprises;
+            }
+
+            if (newStations.length > 0) {
+              const currentIds = new Set(savedStations.map(s => s.meta.registryId));
+              setSavedStations(prev => [...prev, ...newStations.filter(s => s?.meta?.registryId && !currentIds.has(s.meta.registryId))]);
+            }
+            if (newNpcs.length > 0) {
+              const currentIds = new Set(savedNpcs.map(n => n.meta.id));
+              setSavedNpcs(prev => [...prev, ...newNpcs.filter(n => n?.meta?.id && !currentIds.has(n.meta.id))]);
+            }
+            if (newPirates.length > 0) {
+              const currentIds = new Set(savedPirates.map(p => p.meta.registryId));
+              setSavedPirates(prev => [...prev, ...newPirates.filter(p => p?.meta?.registryId && !currentIds.has(p.meta.registryId))]);
+            }
+            if (newEnterprises.length > 0) {
+              const currentIds = new Set(savedEnterprises.map(ent => ent.meta.registryId));
+              setSavedEnterprises(prev => [...prev, ...newEnterprises.filter(ent => ent?.meta?.registryId && !currentIds.has(ent.meta.registryId))]);
+            }
+          } catch (error) { console.error("Omninet Error: Failed to parse archive file", error); }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+      };
+
+      // Pre-calculate booleans for save buttons
+      const isCurrentStationSaved = savedStations.some(s => s?.meta?.registryId === stationMeta?.registryId);
+      const isCurrentNpcSaved = savedNpcs.some(n => n?.meta?.id === npcMeta?.id);
+      const isCurrentPirateSaved = savedPirates.some(p => p?.meta?.registryId === pirateMeta?.registryId);
+      const isCurrentEnterpriseSaved = savedEnterprises.some(e => e?.meta?.registryId === enterpriseMeta?.registryId);
+
+      // Helper grouping for NPCs
+      const groupedNpcs = {};
+      savedStations.forEach(s => { groupedNpcs[s.meta.registryId] = { stationName: s.station.name, npcs: [] }; });
+      groupedNpcs['unstationed'] = { stationName: 'Unstationed Drifters', npcs: [] };
+      savedNpcs.forEach(n => {
+        if (n.homeStationId && groupedNpcs[n.homeStationId]) groupedNpcs[n.homeStationId].npcs.push(n);
+        else groupedNpcs['unstationed'].npcs.push(n);
+      });
+
+      if (!stationData || !npcData || !pirateData || !enterpriseData) return null;
+
+      return (
+        <div className="min-h-screen p-4 sm:p-6 flex flex-col items-center">
+          
+          {/* ========================================= */}
+          {/* GLOBAL HEADER & TABS                      */}
+          {/* ========================================= */}
+          <div className="w-full max-w-7xl mb-6">
+            <div className="flex flex-col md:flex-row items-center justify-between border-b-2 border-slate-700 pb-4 mb-4">
+              <div className="flex items-center gap-3 mb-4 md:mb-0">
+                <i className="fa-solid fa-database text-white text-3xl opacity-50"></i>
+                <div>
+                  <h1 className="text-2xl font-black text-white tracking-widest uppercase">Omninet Databank</h1>
+                  <h2 className="text-xs text-slate-500 tracking-widest">// RIM SECTOR COMPILATION //</h2>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <input type="file" accept=".json" ref={fileInputRef} onChange={handleImport} className="hidden" />
+                <button onClick={() => fileInputRef.current?.click()} className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold uppercase text-xs tracking-wider transition-all flex items-center gap-2 border border-slate-600">
+                  <i className="fa-solid fa-upload text-sm"></i> Import
+                </button>
+                <button onClick={exportDatabank} className="px-3 py-1.5 bg-slate-800 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-slate-700 hover:border-emerald-400 font-bold uppercase text-xs tracking-wider transition-all flex items-center gap-2">
+                  <i className="fa-solid fa-download text-sm"></i> Export All
+                </button>
+              </div>
+            </div>
+
+            {/* TAB NAVIGATION */}
+            <div className="flex flex-wrap gap-2 border-b border-slate-800">
+              <button onClick={() => setActiveTab('stations')} className={`px-4 sm:px-6 py-3 font-black tracking-widest uppercase flex items-center gap-2 transition-all ${activeTab === 'stations' ? 'bg-orange-600 text-white border-t-2 border-orange-400' : 'bg-slate-900 text-slate-500 hover:text-orange-400'}`}>
+                <i className="fa-solid fa-map text-lg"></i> <span className="hidden sm:inline">Stations</span>
+              </button>
+              <button onClick={() => setActiveTab('npcs')} className={`px-4 sm:px-6 py-3 font-black tracking-widest uppercase flex items-center gap-2 transition-all ${activeTab === 'npcs' ? 'bg-cyan-600 text-white border-t-2 border-cyan-400' : 'bg-slate-900 text-slate-500 hover:text-cyan-400'}`}>
+                <i className="fa-solid fa-users text-lg"></i> <span className="hidden sm:inline">Personnel</span>
+              </button>
+              <button onClick={() => setActiveTab('pirates')} className={`px-4 sm:px-6 py-3 font-black tracking-widest uppercase flex items-center gap-2 transition-all ${activeTab === 'pirates' ? 'bg-red-700 text-white border-t-2 border-red-400' : 'bg-slate-900 text-slate-500 hover:text-red-400'}`}>
+                <i className="fa-solid fa-skull text-lg"></i> <span className="hidden sm:inline">Pirates</span>
+              </button>
+              <button onClick={() => setActiveTab('enterprises')} className={`px-4 sm:px-6 py-3 font-black tracking-widest uppercase flex items-center gap-2 transition-all ${activeTab === 'enterprises' ? 'bg-purple-700 text-white border-t-2 border-purple-400' : 'bg-slate-900 text-slate-500 hover:text-purple-400'}`}>
+                <i className="fa-solid fa-building text-lg"></i> <span className="hidden sm:inline">Enterprises</span>
+              </button>
+            </div>
+          </div>
+
+          {/* ========================================= */}
+          {/* MODULE 1: STATIONS                        */}
+          {/* ========================================= */}
+          {activeTab === 'stations' && (
+            <div className="w-full max-w-7xl animate-in fade-in duration-300">
+              <div className="flex flex-col sm:flex-row justify-between mb-6 border-b border-orange-600/30 pb-4">
+                <h2 className="text-xl text-orange-500 font-black uppercase flex items-center gap-2"><i className="fa-solid fa-terminal text-xl"></i> Local Environments</h2>
+                <div className="flex gap-2 mt-3 sm:mt-0">
+                  <button onClick={() => setStationViewMode(stationViewMode === 'query' ? 'archives' : 'query')} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${stationViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
+                    <i className="fa-solid fa-box-archive text-sm"></i> Archives ({savedStations.length})
+                  </button>
+                  {stationViewMode === 'query' && (
+                    <>
+                      <button onClick={() => saveEntity('station')} disabled={isCurrentStationSaved} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${isCurrentStationSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentStationSaved ? 'Saved' : 'Save'}</button>
+                      <button onClick={() => setShowStationModal(true)} className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase border border-slate-600 flex items-center gap-2"><i className="fa-solid fa-gear text-sm"></i> Config</button>
+                      <button onClick={generateStation} className="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs uppercase border border-orange-400 flex items-center gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Scan</button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {stationViewMode === 'archives' ? (
+                <div className="space-y-4">
+                  {savedStations.length === 0 ? <p className="text-slate-500 italic p-8 text-center bg-slate-900 border border-slate-800">No stations stored.</p> : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {savedStations.map((saved) => (
+                        <div key={saved.meta.registryId} className="bg-slate-900 border border-slate-700 p-4 hover:border-orange-500 transition-colors flex flex-col justify-between">
+                          <div>
+                            <div className="flex justify-between items-start mb-2"><h4 className="text-lg text-white font-black uppercase truncate mr-2">{saved.station.name}</h4><span className="text-xs text-slate-500 font-mono shrink-0">{saved.meta.registryId}</span></div>
+                            <p className="text-xs text-orange-400 mb-1">{saved.station.majorPurpose}</p>
+                            <p className="text-xs text-slate-400 line-clamp-2 mb-4">{saved.station.seed}</p>
+                          </div>
+                          <div className="flex gap-2 border-t border-slate-800 pt-3">
+                            <button onClick={() => loadEntity('station', saved)} className="flex-1 py-1.5 bg-slate-800 hover:bg-orange-600 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
+                            <button onClick={() => deleteEntity('station', saved.meta.registryId)} className="px-3 py-1.5 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-2 opacity-10"><i className="fa-solid fa-database text-[100px]"></i></div>
+                      <h3 className="text-xs text-orange-500 font-bold mb-1 tracking-wider uppercase">Designation</h3>
+                      <div className="text-3xl text-white font-black uppercase mb-1">{stationData.name}</div>
+                      <div className="mt-4 space-y-3 relative z-10 text-sm">
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Registry ID</span><span className="text-slate-200">{stationMeta.registryId}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1 items-start"><span className="text-slate-500 mr-4">Local Districts</span><span className="text-slate-200 text-right">{stationData.districts.join(', ') || "None Recorded"}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Threat Index</span><span className={`${stationMeta.threat === 'Critical' ? 'text-red-500 font-bold' : 'text-slate-200'}`}>{stationMeta.threat}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Local Gravity</span><span className="text-slate-200">{stationMeta.gravity}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Pop. Est</span><span className="text-slate-200">{stationMeta.population}</span></div>
+                        <div className="flex justify-between pb-1"><span className="text-slate-500">Manna Index</span><span className="text-slate-200">{stationMeta.mannaRate} μ</span></div>
+                      </div>
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 p-5">
+                      <div className="flex items-center gap-2 mb-3"><i className="fa-solid fa-crosshairs text-orange-500 text-lg"></i><h3 className="text-md text-white font-bold tracking-wider uppercase">Operational Purview</h3></div>
+                      <div className="space-y-4">
+                        <div><p className="text-xs text-slate-500 uppercase">Primary Industry</p><p className="text-md text-slate-100 border-l-2 border-orange-500 pl-3 mt-1">{stationData.majorPurpose}</p></div>
+                        {stationData.minorPurpose && <div><p className="text-xs text-slate-500 uppercase">Secondary Industry</p><p className="text-sm text-slate-300 border-l-2 border-slate-600 pl-3 mt-1">{stationData.minorPurpose}</p></div>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-slate-900 border border-slate-800 p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-map text-lg text-orange-500"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Historical Seed & Foundation</h3></div>
+                      <p className="text-slate-300 text-md leading-relaxed bg-slate-950 p-4 border border-slate-800 rounded">{stationData.seed}</p>
+                    </div>
+                    {stationData.curiosities.length > 0 && (
+                      <div className="bg-slate-900 border border-slate-800 p-6">
+                        <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-eye text-sky-500 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Notable Curiosities</h3></div>
+                        <div className="space-y-3">{stationData.curiosities.map((c, i) => <div key={i} className="flex gap-3 items-start bg-slate-950 p-3 border border-slate-800 rounded"><i className="fa-solid fa-bolt text-sky-400 mt-0.5 shrink-0 text-base"></i><p className="text-slate-300 text-sm">{c}</p></div>)}</div>
+                      </div>
+                    )}
+                    {stationData.problems.length > 0 && (
+                      <div className="bg-slate-900 border-t-2 border-red-600 p-6 shadow-[0_-2px_10px_rgba(220,38,38,0.1)]">
+                        <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-shield-halved text-red-500 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Active Problems</h3></div>
+                        <div className="space-y-3">{stationData.problems.map((p, i) => <div key={i} className="flex gap-3 items-start bg-red-950/20 p-3 border border-red-900/50 rounded"><i className="fa-solid fa-triangle-exclamation text-red-500 mt-0.5 shrink-0 text-base"></i><p className="text-red-100 text-sm font-semibold">{p}</p></div>)}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ========================================= */}
+          {/* MODULE 2: NPCS                            */}
+          {/* ========================================= */}
+          {activeTab === 'npcs' && (
+            <div className="w-full max-w-7xl animate-in fade-in duration-300">
+              <div className="flex flex-col sm:flex-row justify-between mb-6 border-b border-cyan-600/30 pb-4">
+                <h2 className="text-xl text-cyan-500 font-black uppercase flex items-center gap-2"><i className="fa-solid fa-user text-xl"></i> Subject Profiles</h2>
+                <div className="flex gap-2 mt-3 sm:mt-0">
+                  <button onClick={() => setNpcViewMode(npcViewMode === 'query' ? 'archives' : 'query')} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${npcViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
+                    <i className="fa-solid fa-box-archive text-sm"></i> Archives ({savedNpcs.length})
+                  </button>
+                  {npcViewMode === 'query' && (
+                    <>
+                      <button onClick={() => saveEntity('npc')} disabled={isCurrentNpcSaved} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${isCurrentNpcSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentNpcSaved ? 'Saved' : 'Save'}</button>
+                      <button onClick={generateNpc} className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs uppercase border border-cyan-400 flex items-center gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Scan Personnel</button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {npcViewMode === 'archives' ? (
+                <div className="space-y-8">
+                  {savedNpcs.length === 0 ? <p className="text-slate-500 italic p-8 text-center bg-slate-900 border border-slate-800">No personnel files located.</p> : (
+                    Object.keys(groupedNpcs).map(stationId => {
+                      const group = groupedNpcs[stationId];
+                      if (group.npcs.length === 0) return null;
+                      return (
+                        <div key={stationId} className="space-y-3">
+                          <h3 className="text-md text-cyan-400 font-bold tracking-widest uppercase border-b border-slate-700 pb-1 flex items-center gap-2">
+                            {stationId === 'unstationed' ? <i className="fa-solid fa-satellite-dish text-base"></i> : <i className="fa-solid fa-map text-base"></i>} {group.stationName} <span className="text-xs text-slate-600 ml-2">[{group.npcs.length} Records]</span>
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {group.npcs.map(saved => (
+                              <div key={saved.meta.id} className="bg-slate-900 border border-slate-700 p-4 hover:border-cyan-500 transition-colors flex flex-col justify-between">
+                                <div>
+                                  <div className="flex justify-between items-start mb-2"><h4 className="text-lg text-white font-black uppercase truncate mr-2">{saved.npc.name}</h4><span className="text-xs text-slate-500 font-mono shrink-0">{saved.meta.id}</span></div>
+                                  <div className="flex flex-wrap gap-1 mb-2">{saved.npc.descriptors.map((d, i) => <span key={i} className="text-[10px] uppercase bg-cyan-900/40 text-cyan-400 px-1.5 py-0.5 rounded">{d}</span>)}</div>
+                                  <p className="text-xs text-slate-300 mb-1"><span className="text-slate-500">Pri:</span> {saved.npc.primaryOcc}</p>
+                                  <p className="text-xs text-slate-300 mb-3"><span className="text-slate-500">Alt:</span> {saved.npc.altOcc}</p>
+                                </div>
+                                <div className="flex gap-2 border-t border-slate-800 pt-3">
+                                  <button onClick={() => loadEntity('npc', saved)} className="flex-1 py-1.5 bg-slate-800 hover:bg-cyan-600 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
+                                  <button onClick={() => deleteEntity('npc', saved.meta.id)} className="px-3 py-1.5 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-2 opacity-10"><i className="fa-solid fa-fingerprint text-[100px]"></i></div>
+                      <h3 className="text-xs text-cyan-500 font-bold mb-1 tracking-wider uppercase">Subject Identity</h3>
+                      <div className="text-2xl text-white font-black uppercase mb-1 leading-tight">{npcData.name}</div>
+                      <div className="flex flex-wrap gap-2 mt-3 relative z-10">{npcData.descriptors.map((d, i) => <span key={i} className="bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-1 text-xs uppercase font-bold">{d}</span>)}</div>
+                      <div className="mt-5 space-y-3 relative z-10 text-sm">
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Biometric ID</span><span className="text-slate-200">{npcMeta.id}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Threat Level</span><span className={`${(npcMeta.threat === 'High' || npcMeta.threat === 'Lethal') ? 'text-red-500 font-bold' : 'text-slate-200'}`}>{npcMeta.threat}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Bounty Status</span><span className="text-orange-400">{npcMeta.bounty}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Probable Affil.</span><span className="text-slate-200 text-right max-w-[60%]">{npcMeta.affiliation}</span></div>
+                        <div className="flex justify-between pb-1"><span className="text-slate-500">Omninet Footprint</span><span className="text-slate-200">{npcMeta.omninetFootprint}</span></div>
+                      </div>
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 p-5">
+                      <h3 className="text-xs text-cyan-500 font-bold mb-3 tracking-wider uppercase">Home Coordinates</h3>
+                      <select value={selectedHomeStation} onChange={(e) => setSelectedHomeStation(e.target.value)} className="w-full bg-slate-950 border border-slate-700 text-slate-200 p-2 text-sm focus:outline-none focus:border-cyan-500">
+                        <option value="unstationed">-- Unstationed Drifter --</option>
+                        {savedStations.map(s => <option key={s.meta.registryId} value={s.meta.registryId}>{s.station.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-slate-900 border border-slate-800 flex flex-col sm:flex-row">
+                      <div className="p-6 flex-1 border-b sm:border-b-0 sm:border-r border-slate-800"><h3 className="text-xs text-slate-500 tracking-wider uppercase mb-1">Primary Occupation</h3><p className="text-lg text-white font-bold">{npcData.primaryOcc}</p></div>
+                      <div className="p-6 flex-1"><h3 className="text-xs text-slate-500 tracking-wider uppercase mb-1">Alternate/Clandestine</h3><p className="text-lg text-cyan-400 font-bold">{npcData.altOcc}</p></div>
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 p-6">
+                      <h3 className="text-md text-white font-bold tracking-wider uppercase mb-3 flex items-center gap-2"><i className="fa-solid fa-eye text-sky-500 text-xl"></i> Observed Quirk</h3>
+                      <p className="text-slate-300 text-md leading-relaxed bg-slate-950 p-4 border border-slate-800 rounded">{npcData.quirk}</p>
+                    </div>
+                    <div className="bg-slate-900 border border-slate-800 p-6">
+                      <h3 className="text-md text-white font-bold tracking-wider uppercase mb-3 flex items-center gap-2"><i className="fa-solid fa-wave-square text-orange-500 text-lg"></i> Deep Motivation</h3>
+                      <p className="text-orange-100 text-md leading-relaxed bg-orange-950/20 p-4 border border-orange-900/50 rounded italic font-semibold">Driven primarily by the desire for: <span className="text-orange-400 uppercase not-italic block mt-1">{npcData.motivation}</span></p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ========================================= */}
+          {/* MODULE 3: PIRATE BANDS                    */}
+          {/* ========================================= */}
+          {activeTab === 'pirates' && (
+            <div className="w-full max-w-7xl animate-in fade-in duration-300">
+              <div className="flex flex-col sm:flex-row justify-between mb-6 border-b border-red-700/50 pb-4">
+                <h2 className="text-xl text-red-500 font-black uppercase flex items-center gap-2"><i className="fa-solid fa-skull text-xl"></i> Pirate Bands</h2>
+                <div className="flex gap-2 mt-3 sm:mt-0">
+                  <button onClick={() => setPirateViewMode(pirateViewMode === 'query' ? 'archives' : 'query')} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${pirateViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
+                    <i className="fa-solid fa-box-archive text-sm"></i> Archives ({savedPirates.length})
+                  </button>
+                  {pirateViewMode === 'query' && (
+                    <>
+                      <button onClick={() => saveEntity('pirate')} disabled={isCurrentPirateSaved} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${isCurrentPirateSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentPirateSaved ? 'Saved' : 'Save'}</button>
+                      <button onClick={generatePirate} className="px-4 py-2 bg-red-700 hover:bg-red-600 text-white font-bold text-xs uppercase border border-red-500 flex items-center gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Identify Band</button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {pirateViewMode === 'archives' ? (
+                <div className="space-y-4">
+                  {savedPirates.length === 0 ? <p className="text-slate-500 italic p-8 text-center bg-slate-900 border border-slate-800">No pirate bands stored.</p> : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {savedPirates.map((saved) => (
+                        <div key={saved.meta.registryId} className="bg-slate-900 border border-slate-700 p-4 hover:border-red-500 transition-colors flex flex-col justify-between">
+                          <div>
+                            <div className="flex justify-between items-start mb-2"><h4 className="text-lg text-white font-black uppercase truncate mr-2">{saved.pirate.name}</h4><span className="text-xs text-slate-500 font-mono shrink-0">{saved.meta.registryId}</span></div>
+                            <p className="text-xs text-red-400 mb-2 font-bold border-l-2 border-red-600 pl-2">{saved.meta.threatLevel} Threat</p>
+                            <p className="text-xs text-slate-400 line-clamp-2 mb-4">{saved.pirate.primaryHustle}</p>
+                          </div>
+                          <div className="flex gap-2 border-t border-slate-800 pt-3">
+                            <button onClick={() => loadEntity('pirate', saved)} className="flex-1 py-1.5 bg-slate-800 hover:bg-red-700 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
+                            <button onClick={() => deleteEntity('pirate', saved.meta.registryId)} className="px-3 py-1.5 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-2 opacity-5"><i className="fa-solid fa-skull text-[120px] text-red-500"></i></div>
+                      <h3 className="text-xs text-red-500 font-bold mb-1 tracking-wider uppercase">Known Alias</h3>
+                      <div className="text-3xl text-white font-black uppercase mb-1">{pirateData.name}</div>
+                      <div className="mt-4 space-y-3 relative z-10 text-sm">
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Registry ID</span><span className="text-slate-200">{pirateMeta.registryId}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Threat Level</span><span className="text-red-500 font-bold">{pirateMeta.threatLevel}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Known Flagship</span><span className="text-slate-200 text-right max-w-[50%] truncate" title={pirateMeta.flagship}>{pirateMeta.flagship}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Est. Op Radius</span><span className="text-slate-200">{pirateMeta.opRadius}</span></div>
+                        <div className="flex justify-between pb-1"><span className="text-slate-500">Total Bounty</span><span className="text-orange-400">{pirateMeta.totalBounty}</span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-slate-900 border border-slate-800 p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-bullseye text-red-500 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Clan Hustles</h3></div>
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="text-xs text-slate-500 uppercase mb-2">Primary Method of Operation</h4>
+                          <p className="text-slate-200 text-md leading-relaxed border-l-2 border-red-600 pl-4">{pirateData.primaryHustle}</p>
+                        </div>
+                        {pirateData.secondaryHustle && (
+                          <div className="pt-2">
+                            <h4 className="text-xs text-slate-500 uppercase mb-2">Secondary / Opportunistic Hustle</h4>
+                            <p className="text-slate-400 text-sm leading-relaxed border-l-2 border-slate-600 pl-4">{pirateData.secondaryHustle}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="bg-slate-900 border-t-2 border-red-800 p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-shield-halved text-red-500 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Main Asset</h3></div>
+                      <p className="text-red-100 text-md leading-relaxed bg-red-950/20 p-4 border border-red-900/50 rounded">{pirateData.mainAsset}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ========================================= */}
+          {/* MODULE 4: ENTERPRISES                     */}
+          {/* ========================================= */}
+          {activeTab === 'enterprises' && (
+            <div className="w-full max-w-7xl animate-in fade-in duration-300">
+              <div className="flex flex-col sm:flex-row justify-between mb-6 border-b border-purple-700/50 pb-4">
+                <h2 className="text-xl text-purple-400 font-black uppercase flex items-center gap-2"><i className="fa-solid fa-building text-xl"></i> Long Rim Enterprises</h2>
+                <div className="flex gap-2 mt-3 sm:mt-0">
+                  <button onClick={() => setEnterpriseViewMode(enterpriseViewMode === 'query' ? 'archives' : 'query')} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${enterpriseViewMode === 'archives' ? 'bg-sky-600 text-white border-sky-400' : 'bg-slate-800 text-slate-300 border-slate-600'}`}>
+                    <i className="fa-solid fa-box-archive text-sm"></i> Archives ({savedEnterprises.length})
+                  </button>
+                  {enterpriseViewMode === 'query' && (
+                    <>
+                      <button onClick={() => saveEntity('enterprise')} disabled={isCurrentEnterpriseSaved} className={`px-4 py-2 font-bold text-xs uppercase transition-all border flex items-center gap-2 ${isCurrentEnterpriseSaved ? 'bg-slate-800 text-slate-500 border-slate-700' : 'bg-emerald-600 text-white border-emerald-400 hover:bg-emerald-500'}`}><i className="fa-solid fa-floppy-disk text-sm"></i> {isCurrentEnterpriseSaved ? 'Saved' : 'Save'}</button>
+                      <button onClick={generateEnterprise} className="px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white font-bold text-xs uppercase border border-purple-500 flex items-center gap-2"><i className="fa-solid fa-wave-square text-sm"></i> Audit Corp</button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {enterpriseViewMode === 'archives' ? (
+                <div className="space-y-4">
+                  {savedEnterprises.length === 0 ? <p className="text-slate-500 italic p-8 text-center bg-slate-900 border border-slate-800">No corporate entities stored.</p> : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {savedEnterprises.map((saved) => (
+                        <div key={saved.meta.registryId} className="bg-slate-900 border border-slate-700 p-4 hover:border-purple-500 transition-colors flex flex-col justify-between">
+                          <div>
+                            <div className="flex justify-between items-start mb-2"><h4 className="text-lg text-white font-black uppercase truncate mr-2">{saved.enterprise.name}</h4><span className="text-xs text-slate-500 font-mono shrink-0">{saved.meta.registryId}</span></div>
+                            <p className="text-xs text-purple-400 mb-2 font-bold border-l-2 border-purple-600 pl-2">{saved.meta.marketCap} Cap</p>
+                            <p className="text-xs text-slate-400 line-clamp-2 mb-4">{saved.enterprise.holdings}</p>
+                          </div>
+                          <div className="flex gap-2 border-t border-slate-800 pt-3">
+                            <button onClick={() => loadEntity('enterprise', saved)} className="flex-1 py-1.5 bg-slate-800 hover:bg-purple-700 text-slate-300 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-folder-open text-sm mx-auto"></i></button>
+                            <button onClick={() => deleteEntity('enterprise', saved.meta.registryId)} className="px-3 py-1.5 bg-slate-800 hover:bg-red-600 text-slate-400 hover:text-white font-bold uppercase text-xs transition-colors"><i className="fa-solid fa-trash-can text-sm"></i></button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-1 space-y-6">
+                    <div className="bg-slate-900 border border-slate-800 p-5 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 p-2 opacity-5"><i className="fa-solid fa-landmark text-[120px] text-purple-500"></i></div>
+                      <h3 className="text-xs text-purple-400 font-bold mb-1 tracking-wider uppercase">Corporate Entity</h3>
+                      <div className="text-3xl text-white font-black uppercase mb-1 leading-none">{enterpriseData.name}</div>
+                      <div className="mt-6 space-y-3 relative z-10 text-sm">
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Registry ID</span><span className="text-slate-200">{enterpriseMeta.registryId}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Est. Market Cap</span><span className="text-green-400 font-bold">{enterpriseMeta.marketCap}</span></div>
+                        <div className="flex justify-between border-b border-slate-800 pb-1"><span className="text-slate-500">Public Face</span><span className="text-slate-200">{enterpriseMeta.publicFace}</span></div>
+                        <div className="flex justify-between pb-1"><span className="text-slate-500">Merc Contracts</span><span className="text-slate-200">{enterpriseMeta.mercContracts} Active</span></div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-slate-900 border border-slate-800 p-5">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-users text-purple-400 text-lg"></i><h3 className="text-md text-white font-bold tracking-wider uppercase">Known Representatives</h3></div>
+                      <div className="space-y-3">
+                        {enterpriseData.representatives.map((rep, idx) => (
+                          <p key={idx} className="text-slate-300 text-sm leading-relaxed border-l-2 border-purple-500 pl-3">{rep}</p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-slate-900 border border-slate-800 p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-briefcase text-purple-400 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Primary Holdings</h3></div>
+                      <p className="text-slate-200 text-md leading-relaxed bg-slate-950 p-4 border border-slate-800 rounded">{enterpriseData.holdings}</p>
+                    </div>
+                    <div className="bg-slate-900 border-t-2 border-purple-800 p-6">
+                      <div className="flex items-center gap-2 mb-4"><i className="fa-solid fa-shield-halved text-purple-400 text-xl"></i><h3 className="text-lg text-white font-bold tracking-wider uppercase">Overall Strength</h3></div>
+                      <p className="text-purple-100 text-md leading-relaxed bg-purple-950/20 p-4 border border-purple-900/50 rounded">{enterpriseData.strength}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* --- STATION CONFIG MODAL --- */}
+          {showStationModal && (
+            <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="bg-slate-900 border-2 border-orange-600 p-6 max-w-md w-full shadow-[0_0_30px_rgba(234,88,12,0.3)] relative">
+                <button onClick={() => setShowStationModal(false)} className="absolute top-4 right-4 text-slate-400 hover:text-white"><i className="fa-solid fa-xmark text-xl"></i></button>
+                <h2 className="text-xl font-black text-white uppercase mb-6 flex items-center gap-2 border-b border-orange-600/50 pb-2"><i className="fa-solid fa-gear text-orange-500 text-xl"></i> Station Parameters</h2>
+                <div className="space-y-6 mb-8">
+                  <div><label className="flex justify-between text-xs font-bold text-slate-300 uppercase mb-2"><span>Districts</span><span className="text-orange-500">{stationSettings.districts}</span></label><input type="range" min="0" max="10" value={stationSettings.districts} onChange={(e) => setStationSettings({...stationSettings, districts: parseInt(e.target.value)})} className="w-full accent-orange-500" /></div>
+                  <div><label className="flex justify-between text-xs font-bold text-slate-300 uppercase mb-2"><span>Curiosities</span><span className="text-sky-500">{stationSettings.curiosities}</span></label><input type="range" min="0" max="10" value={stationSettings.curiosities} onChange={(e) => setStationSettings({...stationSettings, curiosities: parseInt(e.target.value)})} className="w-full accent-sky-500" /></div>
+                  <div><label className="flex justify-between text-xs font-bold text-slate-300 uppercase mb-2"><span>Problems</span><span className="text-red-500">{stationSettings.problems}</span></label><input type="range" min="0" max="10" value={stationSettings.problems} onChange={(e) => setStationSettings({...stationSettings, problems: parseInt(e.target.value)})} className="w-full accent-red-500" /></div>
+                </div>
+                <button onClick={() => { generateStation(); setShowStationModal(false); }} className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(234,88,12,0.4)]">Apply Configuration</button>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
+
+```
